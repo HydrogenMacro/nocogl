@@ -1,7 +1,7 @@
-import regl, { type Regl } from "regl";
+import regl, { type Cancellable, type Regl } from "regl";
 import { useEffect, useRef } from "react";
-
-
+import { subscribe } from "valtio";
+import { appState } from "./state";
 
 export function Display() {
     const canvasRef = useRef<HTMLCanvasElement>(null!);
@@ -13,8 +13,54 @@ export function Display() {
             canvasRef.current.height = canvasRef.current.clientHeight;
         });
         canvasResizeObserver.observe(canvasRef.current);
+        let currentFrameLoop: Cancellable;
         {
             const regl = reglRef.current;
+            subscribe(appState, () => {
+                try {
+                    currentFrameLoop?.cancel?.();
+                    const draw = regl<any, any, any, any, any>({
+                        frag: appState.fragShader,
+                        vert: appState.vertexShader,
+                        attributes: appState.attributes.reduce(
+                            (obj, [attrName, attrJs]) => {
+                                obj[attrName] = regl.buffer(eval(attrJs));
+                                return obj;
+                            },
+                            {} as Record<string, ReturnType<Regl["buffer"]>>
+                        ),
+                        uniforms: appState.uniforms.reduce(
+                            (obj, [uniformName]) => {
+                                obj[uniformName] = regl.prop(
+                                    uniformName as any as never
+                                ); // idfk
+                                return obj;
+                            },
+                            {} as Record<string, any>
+                        ),
+                        count: appState.vertexCount,
+                    });
+                    currentFrameLoop = regl.frame(() => {
+                        regl.clear({
+                            color: [0, 0, 0, 0],
+                            depth: 1,
+                        });
+                        draw(
+                            appState.uniforms.reduce(
+                                (obj, [uniformName, uniformJs]) => {
+                                    obj[uniformName] = eval(uniformJs);
+                                    return obj;
+                                },
+                                {} as Record<string, any>
+                            )
+                        );
+                    });
+                } catch (e) {
+                    console.error(e);
+                }
+            });
+            appState._n += 1;
+            /*
             // Calling regl() creates a new partially evaluated draw command
             const drawTriangle = regl({
                 // Shaders in regl are just strings.  You can use glslify or whatever you want
@@ -23,7 +69,7 @@ export function Display() {
                 precision mediump float;
                 uniform vec4 color;
                 void main() {
-                gl_FragColor = color;
+                    gl_FragColor = color;
                 }`,
 
                             vert: `
@@ -54,7 +100,7 @@ export function Display() {
             });
 
             // regl.frame() wraps requestAnimationFrame and also handles viewport changes
-            regl.frame(({ time }) => {
+            regl.frame(({ time, drawingBufferWidth, drawingBufferHeight }) => {
                 // clear contents of the drawing buffer
                 regl.clear({
                     color: [0, 0, 0, 0],
@@ -69,7 +115,7 @@ export function Display() {
                         1,
                     ],
                 });
-            });
+            });*/
         }
     }, []);
 

@@ -1,15 +1,5 @@
-import {
-    createContext,
-    useRef,
-    useState,
-    type PropsWithChildren,
-    type ReactNode,
-} from "react";
-import { createPortal } from "react-dom";
 import { Link, Outlet, Route, useNavigate } from "react-router";
-import { Display } from "./display";
-import { FaChevronDown, FaChevronRight } from "react-icons/fa";
-import clsx from "clsx";
+import { Display } from "./Display";
 import {
     AttributesSection,
     FragmentShaderSection,
@@ -17,51 +7,89 @@ import {
     UniformsSection,
     VertexShaderSection,
 } from "./controlSections";
+import { useEffect, useState } from "react";
+import { useSnapshot } from "valtio";
+import { appState } from "./state";
 
 export const AppRoutes = (
     <Route path="/app" element={<App />}>
-        <Route path="new"></Route>
-        <Route path="export"></Route>
+        <Route path="share" element={
+            <ShareModal></ShareModal>
+        }></Route>
     </Route>
 );
 
 function App() {
+    useEffect(() => {
+        const url = new URL(window.location.href);
+        let sharedProjectName = url.searchParams.get("project");
+        if (sharedProjectName) {
+            fetch(`https://vex--fab878585a0211f0b397f69ea79377d9.web.val.run/${sharedProjectName}`).then(res => res.json()).then(data => {
+                Object.assign(appState, data);
+            }, () => {
+                appState.projectName = "Error loading project";
+            });
+        }
+    }, []);
     return (
-        <div className="w-dvw h-dvh flex flex-col">
-            <Header></Header>
-            <main className="flex-1 flex">
-                <div className="flex-1 flex flex-col">
-                    <div className="flex-1">
-                        <Display></Display>
+        <>
+            <div className="w-dvw h-dvh flex flex-col">
+                <Header></Header>
+                <main className="flex-1 flex overflow-hidden">
+                    <div className="flex-1 flex flex-col">
+                        <div className="flex-1">
+                            <Display></Display>
+                        </div>
+                        <div className="flex-1">
+                            <h2 className="p-4 text-2xl">Console</h2>
+                            <div className="divider m-0 h-0"></div>
+                            <div className="p-4">No logs yet.</div>
+                        </div>
                     </div>
-                    <div className="flex-1">
-                        <h2 className="p-4 text-2xl">Console</h2>
+                    <div className="flex-1 overflow-y-auto">
+                        <GeneralSection></GeneralSection>
+                        <div className="divider m-0 h-0"></div>
+                        <UniformsSection></UniformsSection>
+                        <div className="divider m-0 h-0"></div>
+                        <AttributesSection></AttributesSection>
+                        <div className="divider m-0 h-0"></div>
+                        <VertexShaderSection></VertexShaderSection>
+                        <div className="divider m-0 h-0"></div>
+                        <FragmentShaderSection></FragmentShaderSection>
                         <div className="divider m-0 h-0"></div>
                     </div>
-                </div>
-                <div className="flex-1 overflow-y-auto">
-                    <GeneralSection></GeneralSection>
-                    <div className="divider m-0 h-0"></div>
-                    <UniformsSection></UniformsSection>
-                    <div className="divider m-0 h-0"></div>
-                    <AttributesSection></AttributesSection>
-                    <div className="divider m-0 h-0"></div>
-                    <VertexShaderSection></VertexShaderSection>
-                    <div className="divider m-0 h-0"></div>
-                    <FragmentShaderSection></FragmentShaderSection>
-                    <div className="divider m-0 h-0"></div>
-                </div>
-            </main>
+                </main>
+            </div>
             <Outlet />
-        </div>
+        </>
     );
+}
+function ShareModal() {
+    const [shareLink, setShareLink] = useState("Loading...");
+    const snap = useSnapshot(appState);
+    useEffect(() => {
+        fetch(`https://vex--fab878585a0211f0b397f69ea79377d9.web.val.run/${snap.projectName}`, {
+            method: "POST",
+            body: JSON.stringify(snap)
+        }).then(() => setShareLink(`https://hydrogenmacro.github.io/app?project=${snap.projectName}`), () => setShareLink("An error occurred"));
+    });
+
+    return <dialog className="modal" open>
+        <div className="modal-box">
+            <h3 className="font-bold text-lg">Share</h3>
+            <div>{shareLink}</div>
+            <div className="modal-action">
+                <Link to="/app" className="btn">Close</Link>
+            </div>
+        </div>
+    </dialog>
 }
 function Header() {
     let navigate = useNavigate();
     const headerMenus = {
         File: {
-            New: () => navigate("/app/new"),
-            Share: () => {},
+            New: () => location.reload(),
+            Share: () => navigate("/app/share"),
         },
     };
     return (

@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import App, { AppRoutes } from "./App/App.tsx";
+import { AppRoutes } from "./App/App.tsx";
 import { BrowserRouter, Link, Outlet, Route, Routes } from "react-router";
 import { Home } from "./Home.tsx";
 import { Credits } from "./Credits.tsx";

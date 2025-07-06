@@ -1,5 +1,6 @@
 import { FiArrowDown } from "react-icons/fi";
 import { Link } from "react-router";
+import screenshotUrl from "./assets/screenshot.png";
 
 function TitleCard() {
     return (
@@ -31,8 +32,8 @@ export function Home() {
                     Visual WebGL Editor
                 </h2>
                 <div className="w-full flex">
-                    <div className="my-12 w-8/12 aspect-video bg-green-500 transform-3d rotate-x-15 rotate-y-20">
-                        abcdefg
+                    <div className="my-12 w-8/12 aspect-[23/10] bg-green-500 transform-3d rotate-x-15 rotate-y-20" style={{ backgroundImage: `url(${screenshotUrl})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+                        
                     </div>
                 </div>
             </div>
