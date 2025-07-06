@@ -10,7 +10,7 @@ import { FaGithub } from "react-icons/fa";
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
         <div className="font-body [font-feature-settings:'lnum'_1] min-h-dvh flex flex-col">
-            <BrowserRouter>
+            <BrowserRouter basename="/nocogl">
                 <Routes>
                     <Route element={<FooterLayout />}>
                         <Route index element={<Home />}></Route>
