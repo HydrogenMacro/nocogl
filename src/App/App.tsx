@@ -71,7 +71,7 @@ function ShareModal() {
         fetch(`https://vex--fab878585a0211f0b397f69ea79377d9.web.val.run/${snap.projectName}`, {
             method: "POST",
             body: JSON.stringify(snap)
-        }).then(() => setShareLink(`https://hydrogenmacro.github.io/app?project=${snap.projectName}`), () => setShareLink("An error occurred"));
+        }).then(() => setShareLink(`https://hydrogenmacro.github.io/nocogl/?project=${snap.projectName}#/app`), () => setShareLink("An error occurred"));
     });
 
     return <dialog className="modal" open>

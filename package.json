@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://fuzzy-sniffle-7vv76rxx6p42pv6r-5173.app.github.dev/nocogl",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

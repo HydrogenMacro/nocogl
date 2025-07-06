@@ -2,7 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import { AppRoutes } from "./App/App.tsx";
-import { BrowserRouter, Link, Outlet, Route, Routes } from "react-router";
+import { HashRouter, Link, Outlet, Route, Routes } from "react-router";
 import { Home } from "./Home.tsx";
 import { Credits } from "./Credits.tsx";
 import { FaGithub } from "react-icons/fa";
@@ -10,7 +10,7 @@ import { FaGithub } from "react-icons/fa";
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
         <div className="font-body [font-feature-settings:'lnum'_1] min-h-dvh flex flex-col">
-            <BrowserRouter>
+            <HashRouter>
                 <Routes>
                     <Route element={<FooterLayout />}>
                         <Route index element={<Home />}></Route>
@@ -18,7 +18,7 @@ createRoot(document.getElementById("root")!).render(
                     </Route>
                     {AppRoutes}
                 </Routes>
-            </BrowserRouter>
+            </HashRouter>
         </div>
     </StrictMode>
 );
