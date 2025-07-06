@@ -1,0 +1,15 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+@theme {
+    --font-body: Avenir, Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif;
+    --color-base-soft: color-mix(in oklab, var(--btn-color, var(--color-base-content)) 8%, var(--color-base-100));
+}
+
+@layer base {
+    
+}
+html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+}
